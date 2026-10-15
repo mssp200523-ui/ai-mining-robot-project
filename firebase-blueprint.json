@@ -1,0 +1,113 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Mine safety personnel profile",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 256 },
+        "displayName": { "type": "string", "maxLength": 128 },
+        "role": { "type": "string", "enum": ["safety_officer", "rescue_lead", "shift_supervisor", "admin"] },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId", "email", "role"]
+    },
+    "TelemetryRecord": {
+      "title": "TelemetryRecord",
+      "description": "Real-time atmospheric sensor readings from underground mine shafts",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "temperature": { "type": "number" },
+        "humidity": { "type": "number" },
+        "mq8Gas": { "type": "number" },
+        "shaftZone": { "type": "string", "maxLength": 64 },
+        "source": { "type": "string", "maxLength": 64 },
+        "status": { "type": "string", "enum": ["normal", "warning", "critical"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "temperature", "humidity", "mq8Gas", "shaftZone", "status"]
+    },
+    "SafetyAlert": {
+      "title": "SafetyAlert",
+      "description": "Automated and manual mine hazard alerts and evacuation alarms",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "type": { "type": "string", "maxLength": 64 },
+        "severity": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+        "shaftZone": { "type": "string", "maxLength": 64 },
+        "message": { "type": "string", "maxLength": 512 },
+        "status": { "type": "string", "enum": ["active", "acknowledged", "resolved"] },
+        "temperature": { "type": "number" },
+        "humidity": { "type": "number" },
+        "mq8Gas": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "resolvedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "type", "severity", "shaftZone", "message", "status"]
+    },
+    "SafetyConfig": {
+      "title": "SafetyConfig",
+      "description": "Safety threshold parameters and Blynk/MQTT integration settings",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "tempWarn": { "type": "number" },
+        "tempCrit": { "type": "number" },
+        "humidityWarn": { "type": "number" },
+        "humidityCrit": { "type": "number" },
+        "mq8Warn": { "type": "number" },
+        "mq8Crit": { "type": "number" },
+        "blynkToken": { "type": "string", "maxLength": 128 },
+        "pollingIntervalSec": { "type": "number" },
+        "soundSirenOnCritical": { "type": "boolean" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "tempWarn", "tempCrit", "humidityWarn", "humidityCrit", "mq8Warn", "mq8Crit"]
+    },
+    "RescueMission": {
+      "title": "RescueMission",
+      "description": "Mine rescue protocol dispatch and evacuation tracker",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 256 },
+        "targetZone": { "type": "string", "maxLength": 64 },
+        "status": { "type": "string", "enum": ["standby", "dispatched", "in_progress", "completed"] },
+        "teamName": { "type": "string", "maxLength": 128 },
+        "trappedMinersCount": { "type": "number" },
+        "evacuatedMinersCount": { "type": "number" },
+        "hazardLevel": { "type": "string", "enum": ["low", "medium", "high", "extreme"] },
+        "aiGuidance": { "type": "string", "maxLength": 2048 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "title", "targetZone", "status", "hazardLevel"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profiles for authenticated mine safety officers and operators"
+    },
+    "/telemetry/{telemetryId}": {
+      "schema": "TelemetryRecord",
+      "description": "Mine sensor telemetry logs from DHT11 and MQ8 sensors"
+    },
+    "/alerts/{alertId}": {
+      "schema": "SafetyAlert",
+      "description": "Automated and operator-triggered safety alerts"
+    },
+    "/configs/{configId}": {
+      "schema": "SafetyConfig",
+      "description": "Mine safety thresholds and IoT Blynk/MQTT credentials"
+    },
+    "/rescueMissions/{missionId}": {
+      "schema": "RescueMission",
+      "description": "Emergency rescue dispatch missions and shaft status"
+    }
+  }
+}

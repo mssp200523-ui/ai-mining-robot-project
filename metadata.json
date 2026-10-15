@@ -1,0 +1,8 @@
+{
+  "name": "Underground Mine Safety, Monitoring & Rescue AI",
+  "description": "Real-time underground mine safety telemetry dashboard with MQ8 gas, DHT11 temperature/humidity sensing, Blynk IoT & MQTT integration, automated hazard thresholds, shaft visualization, and AI rescue command.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

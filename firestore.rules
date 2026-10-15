@@ -1,0 +1,98 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isOwner(userId)
+        && incoming().userId == request.auth.uid
+        && incoming().email is string
+        && incoming().email.size() <= 256;
+      allow update: if isOwner(userId)
+        && incoming().userId == existing().userId;
+      allow delete: if false;
+    }
+
+    // Telemetry sensor records
+    match /telemetry/{telemetryId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+        && isValidId(telemetryId)
+        && incoming().temperature is number
+        && incoming().humidity is number
+        && incoming().mq8Gas is number
+        && incoming().shaftZone is string
+        && incoming().shaftZone.size() <= 64;
+      allow update, delete: if false;
+    }
+
+    // Safety and hazard alerts
+    match /alerts/{alertId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+        && isValidId(alertId)
+        && incoming().type is string
+        && incoming().type.size() <= 64
+        && incoming().severity in ['low', 'medium', 'high', 'critical']
+        && incoming().status in ['active', 'acknowledged', 'resolved'];
+      allow update: if isSignedIn()
+        && isValidId(alertId)
+        && incoming().status in ['active', 'acknowledged', 'resolved'];
+      allow delete: if false;
+    }
+
+    // Safety threshold configurations
+    match /configs/{configId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn()
+        && isValidId(configId)
+        && incoming().tempWarn is number
+        && incoming().tempCrit is number
+        && incoming().humidityWarn is number
+        && incoming().humidityCrit is number
+        && incoming().mq8Warn is number
+        && incoming().mq8Crit is number;
+      allow delete: if false;
+    }
+
+    // Rescue dispatch missions
+    match /rescueMissions/{missionId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+        && isValidId(missionId)
+        && incoming().title is string
+        && incoming().title.size() <= 256
+        && incoming().targetZone is string
+        && incoming().status in ['standby', 'dispatched', 'in_progress', 'completed'];
+      allow update: if isSignedIn()
+        && isValidId(missionId)
+        && incoming().status in ['standby', 'dispatched', 'in_progress', 'completed'];
+      allow delete: if false;
+    }
+  }
+}
