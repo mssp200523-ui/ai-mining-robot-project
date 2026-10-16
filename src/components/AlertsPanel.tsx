@@ -69,7 +69,7 @@ export const AlertsPanel: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="font-mono text-sm font-bold text-slate-100 uppercase tracking-wide">
-                AUTOMATED SAFETY &amp; THRESHOLD ALERTS
+                SAFETY WARNINGS &amp; ALERTS
               </h2>
               {activeAlertCount > 0 && (
                 <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-500 text-white">
@@ -78,7 +78,7 @@ export const AlertsPanel: React.FC = () => {
               )}
             </div>
             <p className="text-[11px] text-slate-400 font-mono">
-              Live automated triggers when MQ8 gas, temperature, or humidity exceed thresholds
+              Live warnings when gas, temperature, or humidity levels get too high
             </p>
           </div>
         </div>

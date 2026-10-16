@@ -81,8 +81,8 @@ export const BlynkMqttConsole: React.FC = () => {
             </div>
             <p className="text-[11px] text-slate-300 mt-0.5">
               {isRealHardwareLive
-                ? 'Aapke real ESP/NodeMCU sensors ka live data (V2 Temp, V3 Humidity) Blynk Cloud se aa raha hai!'
-                : 'Abhi baseline simulation chal rahi hai. Real hardware data pane ke liye niche apna Blynk Token dalein.'}
+                ? 'Receiving live temperature and humidity data from your hardware.'
+                : 'Waiting for device. Enter your Blynk token below to show live sensor data.'}
             </p>
           </div>
         </div>
@@ -102,7 +102,7 @@ export const BlynkMqttConsole: React.FC = () => {
           }`}
         >
           <RefreshCw className={`w-3.5 h-3.5 ${blynkStatus === 'polling' ? 'animate-spin' : ''}`} />
-          <span>{isRealHardwareLive ? 'Sync Real Sensors' : 'Connect Real Hardware'}</span>
+          <span>{isRealHardwareLive ? 'Refresh Data' : 'Connect Device'}</span>
         </button>
       </div>
 

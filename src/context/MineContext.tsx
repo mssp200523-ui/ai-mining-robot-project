@@ -45,29 +45,9 @@ const DEFAULT_THRESHOLDS: SafetyThresholds = {
   mq8Pin: 'V1',
 };
 
-const INITIAL_MINERS: MinerWorker[] = [
-  { id: 'm-1', name: 'Rajesh K. (Drill Lead)', beaconId: 'BCN-101', shaftLevel: 'Shaft 2 (-320m)', vitals: 'normal', heartRate: 78, battery: 92, status: 'active' },
-  { id: 'm-2', name: 'Sanjay M. (Blasting Op)', beaconId: 'BCN-102', shaftLevel: 'Shaft 2 (-320m)', vitals: 'normal', heartRate: 84, battery: 88, status: 'active' },
-  { id: 'm-3', name: 'Arun D. (Ventilation Tech)', beaconId: 'BCN-103', shaftLevel: 'Shaft 1 (-150m)', vitals: 'normal', heartRate: 72, battery: 96, status: 'active' },
-  { id: 'm-4', name: 'Vikram S. (Haulage Driver)', beaconId: 'BCN-104', shaftLevel: 'Shaft 3 (-480m)', vitals: 'normal', heartRate: 80, battery: 74, status: 'active' },
-  { id: 'm-5', name: 'Deepak T. (Sensor Engineer)', beaconId: 'BCN-105', shaftLevel: 'Shaft 2 (-320m)', vitals: 'normal', heartRate: 81, battery: 85, status: 'active' },
-];
+const INITIAL_MINERS: MinerWorker[] = [];
 
-const INITIAL_MISSIONS: RescueMission[] = [
-  {
-    id: 'mission-01',
-    title: 'Standby Rescue Team Alpha Deployment',
-    targetZone: 'Shaft 2 (-320m Working Face)',
-    status: 'standby',
-    teamName: 'Proto-6 Rescue Squad Alpha',
-    trappedMinersCount: 0,
-    evacuatedMinersCount: 5,
-    hazardLevel: 'low',
-    aiGuidance: 'Atmospheric oxygen at 20.8%, combustible gas below lower explosion limit (LEL). All haulage lines clear.',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
+const INITIAL_MISSIONS: RescueMission[] = [];
 
 interface MineContextType {
   currentReading: TelemetryReading;
@@ -96,6 +76,9 @@ interface MineContextType {
   publishMqtt: (topic: string, payload: string) => Promise<void>;
   // Rescue & Workers
   miners: MinerWorker[];
+  addMiner: (miner: Omit<MinerWorker, 'id'>) => void;
+  removeMiner: (id: string) => void;
+  clearMiners: () => void;
   rescueMissions: RescueMission[];
   createMission: (mission: Omit<RescueMission, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
   updateMissionStatus: (id: string, status: RescueMission['status']) => Promise<void>;
@@ -136,7 +119,54 @@ export const MineProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [telemetryHistory, setTelemetryHistory] = useState<TelemetryReading[]>([]);
 
   const [alerts, setAlerts] = useState<SafetyAlert[]>([]);
-  const [miners, setMiners] = useState<MinerWorker[]>(INITIAL_MINERS);
+  const LOCAL_STORAGE_MINERS_KEY = 'rockrover_active_miners_v2';
+  const getSavedMiners = (): MinerWorker[] => {
+    if (typeof window !== 'undefined') {
+      const raw = localStorage.getItem(LOCAL_STORAGE_MINERS_KEY);
+      if (raw) {
+        try {
+          return JSON.parse(raw);
+        } catch {
+          return [];
+        }
+      }
+    }
+    return [];
+  };
+
+  const [miners, setMiners] = useState<MinerWorker[]>(getSavedMiners);
+
+  const addMiner = (minerData: Omit<MinerWorker, 'id'>) => {
+    const newMiner: MinerWorker = {
+      ...minerData,
+      id: `m-${Date.now()}`,
+    };
+    setMiners((prev) => {
+      const next = [...prev, newMiner];
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(LOCAL_STORAGE_MINERS_KEY, JSON.stringify(next));
+      }
+      return next;
+    });
+  };
+
+  const removeMiner = (id: string) => {
+    setMiners((prev) => {
+      const next = prev.filter((m) => m.id !== id);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(LOCAL_STORAGE_MINERS_KEY, JSON.stringify(next));
+      }
+      return next;
+    });
+  };
+
+  const clearMiners = () => {
+    setMiners([]);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(LOCAL_STORAGE_MINERS_KEY);
+    }
+  };
+
   const [rescueMissions, setRescueMissions] = useState<RescueMission[]>(INITIAL_MISSIONS);
   const [mqttLogs, setMqttLogs] = useState<MqttLogEntry[]>([]);
 
@@ -547,6 +577,9 @@ export const MineProvider: React.FC<{ children: React.ReactNode }> = ({ children
         mqttLogs,
         publishMqtt,
         miners,
+        addMiner,
+        removeMiner,
+        clearMiners,
         rescueMissions,
         createMission,
         updateMissionStatus,

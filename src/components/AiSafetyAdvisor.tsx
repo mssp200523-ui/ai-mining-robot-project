@@ -126,14 +126,14 @@ export const AiSafetyAdvisor: React.FC = () => {
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="font-mono text-sm font-bold text-slate-100 uppercase tracking-wide">
-                  AI UNDERGROUND ATMOSPHERIC ASSESSMENT
+                  AI MINE AIR SAFETY CHECK
                 </h2>
                 <span className="text-[10px] font-mono bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded border border-indigo-500/30">
-                  Gemini 3.8 Flash
+                  Gemini AI
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 font-mono">
-                Multivariate risk modeling: Combustible Gas + Thermal Index + Airflow
+                Automatic safety check: Gas danger, heat stress, and fresh air
               </p>
             </div>
           </div>
@@ -144,7 +144,7 @@ export const AiSafetyAdvisor: React.FC = () => {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-mono text-xs transition"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${analyzing ? 'animate-spin text-amber-400' : ''}`} />
-            <span>{analyzing ? 'ANALYZING...' : 'RE-EVALUATE RISKS'}</span>
+            <span>{analyzing ? 'CHECKING...' : 'CHECK AIR SAFETY'}</span>
           </button>
         </div>
 
@@ -253,19 +253,19 @@ export const AiSafetyAdvisor: React.FC = () => {
       <div className="pt-4 border-t border-slate-800">
         <div className="flex items-center gap-2 mb-2 font-mono text-xs font-semibold text-slate-200">
           <MessageSquare className="w-4 h-4 text-amber-400" />
-          <span>TACTICAL MINE RESCUE CONSULTANT</span>
+          <span>AI MINE SAFETY ADVISOR</span>
           <span className="text-[10px] text-slate-400 font-normal">
-            (Ground-truth guidance for emergency response &amp; breathing apparatus protocols)
+            (Ask questions about gas leaks, heat danger, and emergency exits)
           </span>
         </div>
 
         {/* Quick Question Pills */}
         <div className="flex flex-wrap gap-1.5 mb-3">
           {[
-            'What is the emergency protocol if MQ8 exceeds 600 ppm?',
-            'What is the maximum heat stress duration at 38°C in high humidity?',
-            'How to safely deploy auxiliary ventilation without causing methane recirc?',
-            'Standard procedure for water ingress in Shaft 2 refuge bay?',
+            'What should workers do if gas levels rise?',
+            'What is the danger of high heat and humidity?',
+            'How to safely increase tunnel air flow?',
+            'Where is the nearest emergency safety shelter?',
           ].map((promptText, i) => (
             <button
               key={i}
@@ -287,7 +287,7 @@ export const AiSafetyAdvisor: React.FC = () => {
             value={chatQuestion}
             onChange={(e) => setChatQuestion(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleAskAssistant()}
-            placeholder="Ask AI mine rescue specialist (e.g., SCBA limits, toxic gas isolation, blast door sealing)..."
+            placeholder="Ask a safety question (e.g. what to do if gas is detected, safe exit route)..."
             className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono focus:border-amber-400 focus:outline-none"
           />
           <button

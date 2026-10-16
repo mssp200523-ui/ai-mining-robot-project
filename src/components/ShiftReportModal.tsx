@@ -175,7 +175,7 @@ export const ShiftReportModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
             <div className="p-3 bg-slate-900 border border-slate-800 rounded-lg">
               <span className="text-slate-400 font-semibold block mb-1">PERSONNEL VERIFICATION:</span>
-              <p className="text-slate-200">Active Miners: {miners.length} / 5 Accounted For</p>
+              <p className="text-slate-200">Active Miners: {miners.length} Accounted For</p>
               <p className="text-emerald-400">Refuge Bay: Ready (72h O2)</p>
             </div>
           </div>

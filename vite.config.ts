@@ -1,28 +1,14 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
-import express from 'express';
 import path from 'path';
 import dotenv from 'dotenv';
-import { defineConfig, Plugin } from 'vite';
-import { apiRouter } from './server/apiRouter';
+import { defineConfig } from 'vite';
 
 dotenv.config();
 
-function expressApiPlugin(): Plugin {
-  return {
-    name: 'express-api-plugin',
-    configureServer(server) {
-      const app = express();
-      app.use(express.json());
-      app.use('/api', apiRouter);
-      server.middlewares.use(app);
-    },
-  };
-}
-
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss(), expressApiPlugin()],
+    plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
